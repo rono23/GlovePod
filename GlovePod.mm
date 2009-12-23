@@ -62,7 +62,7 @@ static void $SBMediaController$handleVolumeEvent$(id self, SEL cmd_, GSEventRef 
       hookDecreaseVolume(type);
   }
 
-  return _SBMediaController$handleVolumeEvent$(self, cmd_, event);
+  _SBMediaController$handleVolumeEvent$(self, cmd_, event);
 }
 
 static void $SpringBoard$invokeGlovePod(SpringBoard *self, SEL sel)
