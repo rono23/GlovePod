@@ -12,20 +12,28 @@ static unsigned int increaseButtonID[2] = {1006, 1007};
 static unsigned int decreaseButtonID[2] = {1008, 1009};
 static NSTimer *invocationGlovePodTimer = nil;
 
-static BOOL isLocked(){
-  return [[objc_getClass("SBAwayController") sharedAwayController] isLocked];
+static BOOL isShowing(){
+  return [[objc_getClass("SBAwayController") sharedAwayController] isShowingMediaControls];
 }
 
-static void (*_SBMediaController$increaseVolume$)(id self, SEL cmd_) = NULL;
-static void $SBMediaController$increaseVolume$(id self, SEL cmd_){
-  if(!isLocked())
-    _SBMediaController$increaseVolume$(self, cmd_);
+static void $SpringBoard$invokeGlovePod(SpringBoard *self, SEL sel)
+{
+  if(isShowing())
+    [[objc_getClass("SBMediaController") sharedInstance] togglePlayPause];
 }
 
-static void (*_SBMediaController$decreaseVolume$)(id self, SEL cmd_) = NULL;
-static void $SBMediaController$decreaseVolume$(id self, SEL cmd_){
-  if(!isLocked())
-    _SBMediaController$decreaseVolume$(self, cmd_);
+static void startInvocationGloveTimer()
+{
+  SpringBoard *springBoard = (SpringBoard *)[objc_getClass("SpringBoard") sharedApplication];
+  invocationGlovePodTimer = [[NSTimer scheduledTimerWithTimeInterval:0.7f
+    target:springBoard selector:@selector(invokeGlovePod) userInfo:nil repeats:NO] retain];
+}
+
+static void cancelInvocationGloveTimer()
+{
+  [invocationGlovePodTimer invalidate];
+  [invocationGlovePodTimer release];
+  invocationGlovePodTimer = nil;
 }
 
 static void hookIncreaseVolume(unsigned int type){
@@ -50,41 +58,6 @@ static void hookDecreaseVolume(unsigned int type){
     [view _changeTrackButtonUp:_prevButton];
 }
 
-static void (*_SBMediaController$handleVolumeEvent$)(id self, SEL cmd_, GSEventRef event) = NULL;
-static void $SBMediaController$handleVolumeEvent$(id self, SEL cmd_, GSEventRef event){
-  uint32_t type = GSEventGetType(event);
-
-  if(isLocked()){
-    if(type == increaseButtonID[0] || type == increaseButtonID[1])
-      hookIncreaseVolume(type);
-
-    if(type == decreaseButtonID[0] || type == decreaseButtonID[1])
-      hookDecreaseVolume(type);
-  }
-
-  _SBMediaController$handleVolumeEvent$(self, cmd_, event);
-}
-
-static void $SpringBoard$invokeGlovePod(SpringBoard *self, SEL sel)
-{
-  if(isLocked())
-    [[objc_getClass("SBMediaController") sharedInstance] togglePlayPause];
-}
-
-static void startInvocationGloveTimer()
-{
-  SpringBoard *springBoard = (SpringBoard *)[objc_getClass("SpringBoard") sharedApplication];
-  invocationGlovePodTimer = [[NSTimer scheduledTimerWithTimeInterval:0.7f
-    target:springBoard selector:@selector(invokeGlovePod) userInfo:nil repeats:NO] retain];
-}
-
-static void cancelInvocationGloveTimer()
-{
-  [invocationGlovePodTimer invalidate];
-  [invocationGlovePodTimer release];
-  invocationGlovePodTimer = nil;
-}
-
 static void (*_SpringBoard$lockButtonDown$)(id self, SEL cmd_, GSEventRef down) = NULL;
 static void $SpringBoard$lockButtonDown$(id self, SEL cmd_, GSEventRef down){
   startInvocationGloveTimer();
@@ -95,6 +68,33 @@ static void (*_SpringBoard$lockButtonUp$)(id self, SEL cmd_, GSEventRef up) = NU
 static void $SpringBoard$lockButtonUp$(id self, SEL cmd_, GSEventRef up){
   cancelInvocationGloveTimer();
   _SpringBoard$lockButtonUp$(self, cmd_, up);
+}
+
+static void (*_SBMediaController$increaseVolume$)(id self, SEL cmd_) = NULL;
+static void $SBMediaController$increaseVolume$(id self, SEL cmd_){
+  if(!isShowing())
+    _SBMediaController$increaseVolume$(self, cmd_);
+}
+
+static void (*_SBMediaController$decreaseVolume$)(id self, SEL cmd_) = NULL;
+static void $SBMediaController$decreaseVolume$(id self, SEL cmd_){
+  if(!isShowing())
+    _SBMediaController$decreaseVolume$(self, cmd_);
+}
+
+static void (*_SBMediaController$handleVolumeEvent$)(id self, SEL cmd_, GSEventRef event) = NULL;
+static void $SBMediaController$handleVolumeEvent$(id self, SEL cmd_, GSEventRef event){
+  uint32_t type = GSEventGetType(event);
+
+  if(isShowing()){
+    if(type == increaseButtonID[0] || type == increaseButtonID[1])
+      hookIncreaseVolume(type);
+
+    if(type == decreaseButtonID[0] || type == decreaseButtonID[1])
+      hookDecreaseVolume(type);
+  }
+
+  _SBMediaController$handleVolumeEvent$(self, cmd_, event);
 }
 
 __attribute__((constructor)) static void initialize(){

@@ -1,6 +1,6 @@
 Package: jp.rono23.glovepod
 Name: GlovePod
-Version: 1.0
+Version: 1.1
 Architecture: iphoneos-arm
 Description: fast-forward/rewind with the volume button
 Homepage: http://github.com/rono23/GlovePod
