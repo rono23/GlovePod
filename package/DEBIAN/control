@@ -2,11 +2,11 @@ Package: jp.rono23.glovepod
 Name: GlovePod
 Version: 1.1
 Architecture: iphoneos-arm
-Description: fast-forward/rewind with the volume button
+Description: Control music while gloved!
 Homepage: http://github.com/rono23/GlovePod
 Depiction: http://moreinfo.thebigboss.org/moreinfo/depiction.php?file=GlovePodData
 Maintainer: BigBoss <bigboss@thebigboss.org>
-Author: Hiro Oba (rono23) <rono23@gmail.com>
+Author: rono23 <rono23@gmail.com>
 Section: System
 Depends: mobilesubstrate, firmware (>=3.0)
 dev: rono23
