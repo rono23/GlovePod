@@ -27,10 +27,15 @@ LDFLAGS = -march=armv6 \
 		  $(SDKFLAGS)
 
 INCLUDES = -I$(MS_PATH) \
-		   -I$(SB_PATH)
+		   -I$(SB_PATH) \
+		   -IClasses
 
-SRCS  = $(NAME).mm
-OBJS  := $(SRCS:.mm=.o)
+SUBDIRS    = . Classes
+
+DIRLIST    := $(SUBDIRS:%=%)
+SRCS       := $(foreach dir,$(DIRLIST), $(wildcard $(dir)/*.mm))
+HDRS       := $(foreach dir,$(DIRLIST), $(wildcard $(dir)/*.h))
+OBJS       := $(SRCS:.mm=.o)
 
 all: $(NAME).dylib
 
