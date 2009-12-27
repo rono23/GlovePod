@@ -1,4 +1,3 @@
-#import <UIKit/UIKit.h>
 #import <substrate.h>
 #import <SpringBoard/SpringBoard.h>
 #import <SpringBoard/SBMediaController.h>

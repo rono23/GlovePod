@@ -4,8 +4,8 @@ SDKBINPATH ?= /Developer/Platforms/iPhoneOS.platform/Developer/usr/bin
 SDKVERSION ?= 3.1.2
 SYSROOT ?= /Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS$(SDKVERSION).sdk
 
-MS_PATH = /Developer/Jailbreak/MobileSubstrate
 SB_PATH = /Developer/Jailbreak
+MS_PATH = /Developer/Jailbreak/MobileSubstrate
 LDID = ldid
 
 ARCHS ?= armv6
@@ -18,10 +18,8 @@ LDFLAGS = -march=armv6 \
 		  -mcpu=arm1176jzf-s \
 		  -bind_at_load \
 		  -multiply_defined suppress \
-		  -framework CoreFoundation \
 		  -framework Foundation \
 		  -framework UIKit \
-		  -framework CoreGraphics \
 		  -F/System/Library/PrivateFrameworks \
 		  -framework GraphicsServices \
 		  -L$(MS_PATH) -lsubstrate \
