@@ -1,6 +1,6 @@
 Package: jp.rono23.glovepod
 Name: GlovePod
-Version: 1.1
+Version: 1.2
 Architecture: iphoneos-arm
 Description: Control music while gloved!
 Homepage: http://moreinfo.thebigboss.org/moreinfo/depiction.php?file=glovepodData
@@ -8,6 +8,6 @@ Depiction: http://moreinfo.thebigboss.org/moreinfo/depiction.php?file=glovepodDa
 Maintainer: BigBoss <bigboss@thebigboss.org>
 Author: rono23 <rono23@gmail.com>
 Section: Tweaks
-Depends: mobilesubstrate, firmware (>=3.0)
+Depends: mobilesubstrate, preferenceloader, firmware (>=3.0)
 Sponsor: thebigboss.org <http://thebigboss.org>
 dev: rono23
