@@ -8,10 +8,10 @@
 #import <SpringBoard/VolumeControl.h>
 #import <SpringBoard/SBTelephonyManager.h>
 
-BOOL LSiPodVisiblePowerButtonEnabled;
-BOOL LSiPodVisibleVolumeButtonEnabled;
-BOOL LSiPodHiddenPowerButtonEnabled;
-BOOL LSiPodHiddenVolumeButtonEnabled;
+BOOL LSiPodVisiblePowerButtonEnabled = YES;
+BOOL LSiPodVisibleVolumeButtonEnabled = YES;
+BOOL LSiPodHiddenPowerButtonEnabled = NO;
+BOOL LSiPodHiddenVolumeButtonEnabled = NO;
 static BOOL invocationGlovePodTimerDidFire = NO;
 static uint32_t increaseButtonID[2] = {1006, 1007};
 static uint32_t decreaseButtonID[2] = {1008, 1009};
@@ -26,6 +26,10 @@ static BOOL isLocked(){
 
 static BOOL isVisible(){
     return [[objc_getClass("SBAwayController") sharedAwayController] isShowingMediaControls];
+}
+
+static BOOL isPlaying(){
+    return [[objc_getClass("SBMediaController") sharedInstance] isPlaying];
 }
 
 static BOOL isCalling(){
@@ -44,14 +48,16 @@ static BOOL isLSiPodHiddenPowerButtonEnabled(){
     return (!isVisible() && LSiPodHiddenPowerButtonEnabled);
 }
 
+static BOOL useDefaultVolumeAction(BOOL enabled){
+    return (!isLocked() || (isLocked() && !isPlaying()) || !enabled);
+}
+
 //==============================================================================
 
 static void $SpringBoard$invokeGlovePod(SpringBoard *self, SEL sel)
 {
     invocationGlovePodTimerDidFire = YES;
-
-    if(isLSiPodVisiblePowerButtonEnabled() || isLSiPodHiddenPowerButtonEnabled())
-        [[objc_getClass("SBMediaController") sharedInstance] togglePlayPause];
+    [[objc_getClass("SBMediaController") sharedInstance] togglePlayPause];
 }
 
 static void startInvocationGloveTimer()
@@ -116,7 +122,7 @@ static void prevTrack(uint32_t type){
 }
 
 static void hookVolumeButton(GSEventRef event){
-    if(isLocked()){
+    if(isLocked() && isPlaying()){
         uint32_t type = GSEventGetType(event);
 
         if(type == increaseButtonID[0] || type == increaseButtonID[1])
@@ -137,20 +143,20 @@ static void $SBMediaController$handleVolumeEvent$(id self, SEL cmd_, GSEventRef 
 
 static void (*_SBMediaController$increaseVolume$)(id self, SEL cmd_) = NULL;
 static void $SBMediaController$increaseVolume$(id self, SEL cmd_){
-    if(!isLocked() || !LSiPodVisibleVolumeButtonEnabled)
+    if(useDefaultVolumeAction(LSiPodVisibleVolumeButtonEnabled))
         _SBMediaController$increaseVolume$(self, cmd_);
 }
 
 static void (*_SBMediaController$decreaseVolume$)(id self, SEL cmd_) = NULL;
 static void $SBMediaController$decreaseVolume$(id self, SEL cmd_){
-    if(!isLocked() || !LSiPodVisibleVolumeButtonEnabled)
+    if(useDefaultVolumeAction(LSiPodVisibleVolumeButtonEnabled))
         _SBMediaController$decreaseVolume$(self, cmd_);
 }
 
 
 static void (*_VolumeControl$handleVolumeEvent$)(id self, SEL cmd_, GSEventRef event) = NULL;
 static void $VolumeControl$handleVolumeEvent$(id self, SEL cmd_, GSEventRef event){
-    if(!isCalling() && LSiPodHiddenVolumeButtonEnabled)
+    if(LSiPodHiddenVolumeButtonEnabled)
         hookVolumeButton(event);
 
     _VolumeControl$handleVolumeEvent$(self, cmd_, event);
@@ -158,13 +164,13 @@ static void $VolumeControl$handleVolumeEvent$(id self, SEL cmd_, GSEventRef even
 
 static void (*_VolumeControl$increaseVolume$)(id self, SEL cmd_) = NULL;
 static void $VolumeControl$increaseVolume$(id self, SEL cmd_){
-    if(!isLocked() || isCalling() || !LSiPodHiddenVolumeButtonEnabled)
+    if(useDefaultVolumeAction(LSiPodHiddenVolumeButtonEnabled))
         _VolumeControl$increaseVolume$(self, cmd_);
 }
 
 static void (*_VolumeControl$decreaseVolume$)(id self, SEL cmd_) = NULL;
 static void $VolumeControl$decreaseVolume$(id self, SEL cmd_){
-    if(!isLocked() || isCalling() || !LSiPodHiddenVolumeButtonEnabled)
+    if(useDefaultVolumeAction(LSiPodHiddenVolumeButtonEnabled))
         _VolumeControl$decreaseVolume$(self, cmd_);
 }
 
