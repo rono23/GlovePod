@@ -8,15 +8,16 @@
 #import <SpringBoard/VolumeControl.h>
 #import <SpringBoard/SBTelephonyManager.h>
 
-BOOL LSiPodVisiblePowerButtonEnabled = YES;
-BOOL LSiPodVisibleVolumeButtonEnabled = YES;
-BOOL LSiPodHiddenPowerButtonEnabled = NO;
-BOOL LSiPodHiddenVolumeButtonEnabled = NO;
+extern BOOL LSiPodVisiblePowerButtonEnabled;
+extern BOOL LSiPodVisibleVolumeButtonEnabled;
+extern BOOL LSiPodHiddenPowerButtonEnabled;
+extern BOOL LSiPodHiddenVolumeButtonEnabled;
+extern "C" uint32_t GSEventGetType(GSEventRef event);
+
 static BOOL invocationGlovePodTimerDidFire = NO;
 static uint32_t increaseButtonID[2] = {1006, 1007};
 static uint32_t decreaseButtonID[2] = {1008, 1009};
 static NSTimer *invocationGlovePodTimer = nil;
-extern "C" uint32_t GSEventGetType(GSEventRef event);
 
 //==============================================================================
 

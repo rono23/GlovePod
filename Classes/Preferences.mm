@@ -1,9 +1,9 @@
 #define APP_ID "jp.rono23.glovepod"
 #define GlovePodPreferencesChangedNotification "jp.rono23.glovepod.preferencechanged"
-extern BOOL LSiPodVisiblePowerButtonEnabled;
-extern BOOL LSiPodVisibleVolumeButtonEnabled;
-extern BOOL LSiPodHiddenPowerButtonEnabled;
-extern BOOL LSiPodHiddenVolumeButtonEnabled;
+BOOL LSiPodVisiblePowerButtonEnabled;
+BOOL LSiPodVisibleVolumeButtonEnabled;
+BOOL LSiPodHiddenPowerButtonEnabled;
+BOOL LSiPodHiddenVolumeButtonEnabled;
 
 void applyPreferences(){
     NSArray *keys = [NSArray arrayWithObjects:
