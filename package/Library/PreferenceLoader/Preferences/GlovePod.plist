@@ -14,18 +14,6 @@
   <key>items</key>
   <array>
     <dict>
-      <key>cell</key>
-      <string>PSGroupCell</string>
-      <key>isStaticText</key>
-      <true/>
-    </dict>
-    <dict>
-      <key>cell</key>
-      <string>PSTitleValueCell</string>
-      <key>label</key>
-      <string>Lock Screen Settings</string>
-    </dict>
-    <dict>
     <key>cell</key>
       <string>PSGroupCell</string>
       <key>label</key>
@@ -63,7 +51,7 @@
       <key>cell</key>
       <string>PSGroupCell</string>
       <key>label</key>
-      <string>iPod Controls hidden</string>
+      <string>Screen On</string>
     </dict>
     <dict>
       <key>cell</key>
@@ -73,7 +61,7 @@
       <key>defaults</key>
       <string>jp.rono23.glovepod</string>
       <key>key</key>
-      <string>LSiPodHiddenPowerButtonEnabled</string>
+      <string>LSScreenOnPowerButtonEnabled</string>
       <key>label</key>
       <string>Power Button</string>
       <key>PostNotification</key>
@@ -87,7 +75,41 @@
       <key>defaults</key>
       <string>jp.rono23.glovepod</string>
       <key>key</key>
-      <string>LSiPodHiddenVolumeButtonEnabled</string>
+      <string>LSScreenOnVolumeButtonEnabled</string>
+      <key>label</key>
+      <string>Volume Button</string>
+      <key>PostNotification</key>
+      <string>jp.rono23.glovepod.preferencechanged</string>
+    </dict>
+    <dict>
+      <key>cell</key>
+      <string>PSGroupCell</string>
+      <key>label</key>
+      <string>Screen Off</string>
+    </dict>
+    <dict>
+      <key>cell</key>
+      <string>PSSwitchCell</string>
+      <key>default</key>
+      <false/>
+      <key>defaults</key>
+      <string>jp.rono23.glovepod</string>
+      <key>key</key>
+      <string>LSScreenOffPowerButtonEnabled</string>
+      <key>label</key>
+      <string>Power Button</string>
+      <key>PostNotification</key>
+      <string>jp.rono23.glovepod.preferencechanged</string>
+    </dict>
+    <dict>
+      <key>cell</key>
+      <string>PSSwitchCell</string>
+      <key>default</key>
+      <false/>
+      <key>defaults</key>
+      <string>jp.rono23.glovepod</string>
+      <key>key</key>
+      <string>LSScreenOffVolumeButtonEnabled</string>
       <key>label</key>
       <string>Volume Button</string>
       <key>PostNotification</key>
@@ -105,7 +127,9 @@
       <key>label</key>
       <string>
 Power Button: play/stop a tune by holding.
-Volume Button: switch to the next/prev track.</string>
+Volume Button: switch to the next/prev track.
+
+Lock Screen Settings</string>
     </dict>
   </array>
   <key>title</key>

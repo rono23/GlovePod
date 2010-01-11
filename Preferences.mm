@@ -2,15 +2,19 @@
 #define GlovePodPreferencesChangedNotification "jp.rono23.glovepod.preferencechanged"
 BOOL LSiPodVisiblePowerButtonEnabled = YES;
 BOOL LSiPodVisibleVolumeButtonEnabled = YES;
-BOOL LSiPodHiddenPowerButtonEnabled;
-BOOL LSiPodHiddenVolumeButtonEnabled;
+BOOL LSScreenOnPowerButtonEnabled;
+BOOL LSScreenOnVolumeButtonEnabled;
+BOOL LSScreenOffPowerButtonEnabled;
+BOOL LSScreenOffVolumeButtonEnabled;
 
 void applyPreferences(){
     NSArray *keys = [NSArray arrayWithObjects:
         @"LSiPodVisiblePowerButtonEnabled",
         @"LSiPodVisibleVolumeButtonEnabled",
-        @"LSiPodHiddenPowerButtonEnabled",
-        @"LSiPodHiddenVolumeButtonEnabled",
+        @"LSScreenOnPowerButtonEnabled",
+        @"LSScreenOnVolumeButtonEnabled",
+        @"LSScreenOffPowerButtonEnabled",
+        @"LSScreenOffVolumeButtonEnabled",
         nil];
     NSDictionary *dict = (NSDictionary *)CFPreferencesCopyMultiple(
         (CFArrayRef)keys,
@@ -31,11 +35,19 @@ void applyPreferences(){
 
         obj = [values objectAtIndex:2];
         if([obj isKindOfClass:[NSNumber class]])
-            LSiPodHiddenPowerButtonEnabled = [obj boolValue];
+            LSScreenOnPowerButtonEnabled = [obj boolValue];
 
         obj = [values objectAtIndex:3];
         if([obj isKindOfClass:[NSNumber class]])
-            LSiPodHiddenVolumeButtonEnabled = [obj boolValue];
+            LSScreenOnVolumeButtonEnabled = [obj boolValue];
+
+        obj = [values objectAtIndex:4];
+        if([obj isKindOfClass:[NSNumber class]])
+            LSScreenOffPowerButtonEnabled = [obj boolValue];
+
+        obj = [values objectAtIndex:5];
+        if([obj isKindOfClass:[NSNumber class]])
+            LSScreenOffVolumeButtonEnabled = [obj boolValue];
 
         [dict release];
     }

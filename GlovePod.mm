@@ -5,13 +5,15 @@
 #import <SpringBoard/SBAwayView.h>
 #import <SpringBoard/SBAwayDateView.h>
 #import <SpringBoard/SBAwayMediaControlsView.h>
-#import <SpringBoard/VolumeControl.h>
 #import <SpringBoard/SBTelephonyManager.h>
+#import <SpringBoard/VolumeControl.h>
 
 extern BOOL LSiPodVisiblePowerButtonEnabled;
 extern BOOL LSiPodVisibleVolumeButtonEnabled;
-extern BOOL LSiPodHiddenPowerButtonEnabled;
-extern BOOL LSiPodHiddenVolumeButtonEnabled;
+extern BOOL LSScreenOnPowerButtonEnabled;
+extern BOOL LSScreenOnVolumeButtonEnabled;
+extern BOOL LSScreenOffPowerButtonEnabled;
+extern BOOL LSScreenOffVolumeButtonEnabled;
 extern "C" uint32_t GSEventGetType(GSEventRef event);
 
 static BOOL invocationGlovePodTimerDidFire = NO;
@@ -23,6 +25,10 @@ static NSTimer *invocationGlovePodTimer = nil;
 
 static BOOL isLocked(){
     return [[objc_getClass("SBAwayController") sharedAwayController] isLocked];
+}
+
+static BOOL isDimmed(){
+    return [[objc_getClass("SBAwayController") sharedAwayController] isDimmed];
 }
 
 static BOOL isVisible(){
@@ -38,15 +44,10 @@ static BOOL isCalling(){
 }
 
 static BOOL isPowerButtonEnabled(){
-    return (isLocked() && !isCalling());
-}
-
-static BOOL isLSiPodVisiblePowerButtonEnabled(){
-    return (isVisible() && LSiPodVisiblePowerButtonEnabled);
-}
-
-static BOOL isLSiPodHiddenPowerButtonEnabled(){
-    return (!isVisible() && LSiPodHiddenPowerButtonEnabled);
+    return ((isLocked() && !isCalling()) &&
+        ((LSiPodVisiblePowerButtonEnabled && isVisible()) ||
+        (LSScreenOnPowerButtonEnabled && !isDimmed() && !isVisible()) ||
+        (LSScreenOffPowerButtonEnabled && isDimmed())));
 }
 
 static BOOL useDefaultVolumeAction(BOOL enabled){
@@ -63,13 +64,11 @@ static void $SpringBoard$invokeGlovePod(SpringBoard *self, SEL sel)
 
 static void startInvocationGloveTimer()
 {
-    if(isPowerButtonEnabled()){
-        invocationGlovePodTimerDidFire = NO;
+    invocationGlovePodTimerDidFire = NO;
 
-        SpringBoard *springBoard = (SpringBoard *)[objc_getClass("SpringBoard") sharedApplication];
-        invocationGlovePodTimer = [[NSTimer scheduledTimerWithTimeInterval:0.7f
-            target:springBoard selector:@selector(invokeGlovePod) userInfo:nil repeats:NO] retain];
-    }
+    SpringBoard *springBoard = (SpringBoard *)[objc_getClass("SpringBoard") sharedApplication];
+    invocationGlovePodTimer = [[NSTimer scheduledTimerWithTimeInterval:0.7f
+        target:springBoard selector:@selector(invokeGlovePod) userInfo:nil repeats:NO] retain];
 }
 
 static void cancelInvocationGloveTimer()
@@ -81,7 +80,7 @@ static void cancelInvocationGloveTimer()
 
 static void (*_SpringBoard$lockButtonDown$)(id self, SEL cmd_, GSEventRef down) = NULL;
 static void $SpringBoard$lockButtonDown$(id self, SEL cmd_, GSEventRef down){
-    if(isLSiPodVisiblePowerButtonEnabled() || isLSiPodHiddenPowerButtonEnabled())
+    if(isPowerButtonEnabled())
         startInvocationGloveTimer();
 
     _SpringBoard$lockButtonDown$(self, cmd_, down);
@@ -89,7 +88,7 @@ static void $SpringBoard$lockButtonDown$(id self, SEL cmd_, GSEventRef down){
 
 static void (*_SpringBoard$lockButtonUp$)(id self, SEL cmd_, GSEventRef up) = NULL;
 static void $SpringBoard$lockButtonUp$(id self, SEL cmd_, GSEventRef up){
-    if(invocationGlovePodTimerDidFire && isPowerButtonEnabled() && (isLSiPodVisiblePowerButtonEnabled() || isLSiPodHiddenPowerButtonEnabled())){
+    if(invocationGlovePodTimerDidFire && isPowerButtonEnabled()){
         [self _unsetLockButtonBearTrap];
         [self _setLockButtonTimer:nil];
     }else{
@@ -134,6 +133,8 @@ static void hookVolumeButton(GSEventRef event){
     }
 }
 
+//==============================================================================
+
 static void (*_SBMediaController$handleVolumeEvent$)(id self, SEL cmd_, GSEventRef event) = NULL;
 static void $SBMediaController$handleVolumeEvent$(id self, SEL cmd_, GSEventRef event){
     if(LSiPodVisibleVolumeButtonEnabled)
@@ -154,10 +155,11 @@ static void $SBMediaController$decreaseVolume$(id self, SEL cmd_){
         _SBMediaController$decreaseVolume$(self, cmd_);
 }
 
+//==============================================================================
 
 static void (*_VolumeControl$handleVolumeEvent$)(id self, SEL cmd_, GSEventRef event) = NULL;
 static void $VolumeControl$handleVolumeEvent$(id self, SEL cmd_, GSEventRef event){
-    if(LSiPodHiddenVolumeButtonEnabled)
+    if((!isDimmed() && LSScreenOnVolumeButtonEnabled) || (isDimmed() && LSScreenOffVolumeButtonEnabled))
         hookVolumeButton(event);
 
     _VolumeControl$handleVolumeEvent$(self, cmd_, event);
@@ -165,13 +167,13 @@ static void $VolumeControl$handleVolumeEvent$(id self, SEL cmd_, GSEventRef even
 
 static void (*_VolumeControl$increaseVolume$)(id self, SEL cmd_) = NULL;
 static void $VolumeControl$increaseVolume$(id self, SEL cmd_){
-    if(useDefaultVolumeAction(LSiPodHiddenVolumeButtonEnabled))
+    if((!isDimmed() && useDefaultVolumeAction(LSScreenOnVolumeButtonEnabled)) || (isDimmed() && useDefaultVolumeAction(LSScreenOffVolumeButtonEnabled)))
         _VolumeControl$increaseVolume$(self, cmd_);
 }
 
 static void (*_VolumeControl$decreaseVolume$)(id self, SEL cmd_) = NULL;
 static void $VolumeControl$decreaseVolume$(id self, SEL cmd_){
-    if(useDefaultVolumeAction(LSiPodHiddenVolumeButtonEnabled))
+    if((!isDimmed() && useDefaultVolumeAction(LSScreenOnVolumeButtonEnabled)) || (isDimmed() && useDefaultVolumeAction(LSScreenOffVolumeButtonEnabled)))
         _VolumeControl$decreaseVolume$(self, cmd_);
 }
 

@@ -1,6 +1,6 @@
 Package: jp.rono23.glovepod
 Name: GlovePod
-Version: 1.2.2
+Version: 1.2.3
 Architecture: iphoneos-arm
 Description: Control music while gloved
 Homepage: http://sites.google.com/site/rono23/iphone/glovepod
