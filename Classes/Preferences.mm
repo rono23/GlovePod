@@ -1,7 +1,7 @@
 #define APP_ID "jp.rono23.glovepod"
 #define GlovePodPreferencesChangedNotification "jp.rono23.glovepod.preferencechanged"
-BOOL LSiPodVisiblePowerButtonEnabled;
-BOOL LSiPodVisibleVolumeButtonEnabled;
+BOOL LSiPodVisiblePowerButtonEnabled = YES;
+BOOL LSiPodVisibleVolumeButtonEnabled = YES;
 BOOL LSiPodHiddenPowerButtonEnabled;
 BOOL LSiPodHiddenVolumeButtonEnabled;
 
