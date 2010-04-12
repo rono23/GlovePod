@@ -2,12 +2,14 @@
 #define GlovePodPreferencesChangedNotification "jp.rono23.glovepod.preferencechanged"
 BOOL LSiPodVisiblePowerButtonEnabled = YES;
 BOOL LSiPodVisibleVolumeButtonEnabled = YES;
-BOOL LSScreenOnPowerButtonEnabled;
-BOOL LSScreenOnVolumeButtonEnabled;
-BOOL LSScreenOffPowerButtonEnabled;
-BOOL LSScreenOffVolumeButtonEnabled;
+BOOL LSScreenOnPowerButtonEnabled = NO;
+BOOL LSScreenOnVolumeButtonEnabled = NO;
+BOOL LSScreenOffPowerButtonEnabled = NO;
+BOOL LSScreenOffVolumeButtonEnabled = NO;
+BOOL LSTrackType = NO;
 
-void applyPreferences(){
+void applyPreferences()
+{
     NSArray *keys = [NSArray arrayWithObjects:
         @"LSiPodVisiblePowerButtonEnabled",
         @"LSiPodVisibleVolumeButtonEnabled",
@@ -15,6 +17,7 @@ void applyPreferences(){
         @"LSScreenOnVolumeButtonEnabled",
         @"LSScreenOffPowerButtonEnabled",
         @"LSScreenOffVolumeButtonEnabled",
+        @"LSTrackType",
         nil];
     NSDictionary *dict = (NSDictionary *)CFPreferencesCopyMultiple(
         (CFArrayRef)keys,
@@ -22,47 +25,54 @@ void applyPreferences(){
         kCFPreferencesCurrentUser,
         kCFPreferencesCurrentHost);
 
-    if(dict){
+    if (dict) {
         NSArray *values = [dict objectsForKeys:keys notFoundMarker:[NSNull null]];
 
         id obj = [values objectAtIndex:0];
-        if([obj isKindOfClass:[NSNumber class]])
+        if ([obj isKindOfClass:[NSNumber class]])
             LSiPodVisiblePowerButtonEnabled = [obj boolValue];
 
         obj = [values objectAtIndex:1];
-        if([obj isKindOfClass:[NSNumber class]])
+        if ([obj isKindOfClass:[NSNumber class]])
             LSiPodVisibleVolumeButtonEnabled = [obj boolValue];
 
         obj = [values objectAtIndex:2];
-        if([obj isKindOfClass:[NSNumber class]])
+        if ([obj isKindOfClass:[NSNumber class]])
             LSScreenOnPowerButtonEnabled = [obj boolValue];
 
         obj = [values objectAtIndex:3];
-        if([obj isKindOfClass:[NSNumber class]])
+        if ([obj isKindOfClass:[NSNumber class]])
             LSScreenOnVolumeButtonEnabled = [obj boolValue];
 
         obj = [values objectAtIndex:4];
-        if([obj isKindOfClass:[NSNumber class]])
+        if ([obj isKindOfClass:[NSNumber class]])
             LSScreenOffPowerButtonEnabled = [obj boolValue];
 
         obj = [values objectAtIndex:5];
-        if([obj isKindOfClass:[NSNumber class]])
+        if ([obj isKindOfClass:[NSNumber class]])
             LSScreenOffVolumeButtonEnabled = [obj boolValue];
+
+        obj = [values objectAtIndex:6];
+        if ([obj isKindOfClass:[NSNumber class]])
+            LSTrackType = [obj boolValue];
 
         [dict release];
     }
 }
 
-void reloadPreferences(){
+void reloadPreferences()
+{
     CFPreferencesAppSynchronize(CFSTR(APP_ID));
     applyPreferences();
 }
 
-void preferenceChangedCallback(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo){
+void preferenceChangedCallback(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo)
+{
     reloadPreferences();
 }
 
-void initPreferences(){
+void initPreferences()
+{
     CFNotificationCenterAddObserver(
         CFNotificationCenterGetDarwinNotifyCenter(),
         NULL,

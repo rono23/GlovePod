@@ -46,23 +46,21 @@ clean:
 	rm -f $(OBJS) $(NAME).dylib
 
 # Replace 'iphone' with the IP or hostname of your device
-install: $(NAME).dylib
-	ssh root@iphone rm -f /Library/MobileSubstrate/DynamicLibraries/$(NAME).dylib
-	scp $(NAME).dylib root@iphone:/Library/MobileSubstrate/DynamicLibraries/
-	ssh root@iphone $(LDID) -S /Library/MobileSubstrate/DynamicLibraries/$(NAME).dylib
+install:
+	scp $(NAME).deb root@iphone:.
+	ssh root@iphone dpkg -i $(NAME).deb
 	ssh root@iphone restart
 
-release:
-	rm -rf release
-	cp -a package release
-	cp ${NAME}.dylib release/Library/MobileSubstrate/DynamicLibraries/
-	find release -iname .svn -exec rm -rf {} \;
-	find release -iname .gitignore -exec rm -rf {} \;
-	sudo chgrp -R wheel release
-	sudo chown -R root release
-	sudo dpkg-deb -b release
-	sudo mv release.deb ${NAME}.deb
-	sudo rm -rf release
+package: $(NAME).dylib
+	cp -a layout package
+	cp ${NAME}.dylib package/Library/MobileSubstrate/DynamicLibraries/
+	find package -iname .svn -exec rm -rf {} \;
+	find package -iname .gitignore -exec rm -rf {} \;
+	sudo chgrp -R wheel package
+	sudo chown -R root package
+	sudo dpkg-deb -b package
+	sudo mv package.deb ${NAME}.deb
+	sudo rm -rf package
 
 $(NAME).dylib: config $(OBJS) $(HDRS)
 	$(LD) -dynamiclib $(LDFLAGS) $(OBJS) -o $@
