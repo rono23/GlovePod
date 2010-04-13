@@ -139,7 +139,7 @@ static void $SpringBoard$lockButtonDown$(id self, SEL cmd_, GSEventRef down)
 static void (*_SpringBoard$lockButtonUp$)(id self, SEL cmd_, GSEventRef up) = NULL;
 static void $SpringBoard$lockButtonUp$(id self, SEL cmd_, GSEventRef up)
 {
-    if (invocationGPPowerButtonTimerDidFire) {
+    if (invocationGPPowerButtonTimerDidFire && isPowerButtonEnabled()) {
         [self _unsetLockButtonBearTrap];
         [self _setLockButtonTimer:nil];
     } else {
