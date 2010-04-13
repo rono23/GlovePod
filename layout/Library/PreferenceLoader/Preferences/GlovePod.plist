@@ -157,7 +157,7 @@ Volume Button: switch to the next/prev track</string>
       <key>defaults</key>
       <string>jp.rono23.glovepod</string>
       <key>key</key>
-      <string>LSTrackType</string>
+      <string>LSVolumeButtonType</string>
       <key>label</key>
       <string>Change / Fast</string>
       <key>PostNotification</key>

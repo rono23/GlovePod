@@ -6,7 +6,7 @@ BOOL LSScreenOnPowerButtonEnabled = NO;
 BOOL LSScreenOnVolumeButtonEnabled = NO;
 BOOL LSScreenOffPowerButtonEnabled = NO;
 BOOL LSScreenOffVolumeButtonEnabled = NO;
-BOOL LSTrackType = NO;
+BOOL LSVolumeButtonType = NO;
 
 void applyPreferences()
 {
@@ -17,7 +17,7 @@ void applyPreferences()
         @"LSScreenOnVolumeButtonEnabled",
         @"LSScreenOffPowerButtonEnabled",
         @"LSScreenOffVolumeButtonEnabled",
-        @"LSTrackType",
+        @"LSVolumeButtonType",
         nil];
     NSDictionary *dict = (NSDictionary *)CFPreferencesCopyMultiple(
         (CFArrayRef)keys,
@@ -54,7 +54,7 @@ void applyPreferences()
 
         obj = [values objectAtIndex:6];
         if ([obj isKindOfClass:[NSNumber class]])
-            LSTrackType = [obj boolValue];
+            LSVolumeButtonType = [obj boolValue];
 
         [dict release];
     }

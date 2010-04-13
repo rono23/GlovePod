@@ -14,15 +14,15 @@ extern BOOL LSScreenOnPowerButtonEnabled;
 extern BOOL LSScreenOnVolumeButtonEnabled;
 extern BOOL LSScreenOffPowerButtonEnabled;
 extern BOOL LSScreenOffVolumeButtonEnabled;
-extern BOOL LSTrackType;
+extern BOOL LSVolumeButtonType;
 extern "C" uint32_t GSEventGetType(GSEventRef event);
 
+static uint32_t increaseButtonID[2] = {1006, 1007};
+static uint32_t decreaseButtonID[2] = {1008, 1009};
 static BOOL invocationGPPowerButtonTimerDidFire = NO;
 static BOOL invocationGPChangeTrackTimerDidFire = NO;
 static NSTimer *invocationGPPowerButtonTimer = nil;
 static NSTimer *invocationGPChangeTrackTimer = nil;
-static uint32_t increaseButtonID[2] = {1006, 1007};
-static uint32_t decreaseButtonID[2] = {1008, 1009};
 
 
 /*==============================================================================
@@ -155,7 +155,7 @@ static void $SpringBoard$lockButtonUp$(id self, SEL cmd_, GSEventRef up)
 
 static void nextTrack(uint32_t type)
 {
-    if (LSTrackType) {
+    if (LSVolumeButtonType) {
         if (type == increaseButtonID[0]) {
             startInvocationGPChangeTrackTimer(@"1");
         } else if (type == increaseButtonID[1]) {
@@ -177,7 +177,7 @@ static void nextTrack(uint32_t type)
 
 static void prevTrack(uint32_t type)
 {
-    if (LSTrackType) {
+    if (LSVolumeButtonType) {
         if (type == decreaseButtonID[0]) {
             startInvocationGPChangeTrackTimer(@"-1");
         } else if (type == decreaseButtonID[1]) {
