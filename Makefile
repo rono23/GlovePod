@@ -5,7 +5,7 @@ SDKVERSION ?= 3.1.2
 SYSROOT ?= /Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS$(SDKVERSION).sdk
 
 SB_PATH = /Developer/Jailbreak
-MS_PATH = /Developer/Jailbreak/MobileSubstrate
+MS_PATH = $(SB_PATH)/MobileSubstrate
 LDID = ldid
 
 ARCHS ?= armv6
@@ -26,8 +26,8 @@ LDFLAGS = -march=armv6 \
 		  -lobjc \
 		  $(SDKFLAGS)
 
-INCLUDES = -I$(MS_PATH) \
-		   -I$(SB_PATH) \
+INCLUDES = -I$(SB_PATH) \
+		   -I$(MS_PATH) \
 		   -IClasses
 
 SUBDIRS    = . Classes
@@ -37,35 +37,29 @@ SRCS       := $(foreach dir,$(DIRLIST), $(wildcard $(dir)/*.mm))
 HDRS       := $(foreach dir,$(DIRLIST), $(wildcard $(dir)/*.h))
 OBJS       := $(SRCS:.mm=.o)
 
-all: $(NAME).dylib
-
-config:
-	# Do nothing
-
 clean:
 	rm -f $(OBJS) $(NAME).dylib
 
-# Replace 'iphone' with the IP or hostname of your device
-install:
-	scp $(NAME).deb root@iphone:.
-	ssh root@iphone dpkg -i $(NAME).deb
-	ssh root@iphone restart
+%.o: %.mm
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
-package: $(NAME).dylib
+$(NAME).dylib: $(OBJS) $(HDRS)
+	$(LD) -dynamiclib $(LDFLAGS) $(OBJS) -o $@
+	ldid -S $@
+
+package: $(NAME).dylib control
 	cp -a layout package
+	mkdir -p package/DEBIAN
+	cp -a control package/DEBIAN
 	cp ${NAME}.dylib package/Library/MobileSubstrate/DynamicLibraries/
 	find package -iname .svn -exec rm -rf {} \;
 	find package -iname .gitignore -exec rm -rf {} \;
 	sudo chgrp -R wheel package
 	sudo chown -R root package
-	sudo dpkg-deb -b package
-	sudo mv package.deb ${NAME}.deb
+	sudo dpkg-deb -b package $(shell grep ^Package: control | cut -d ' ' -f 2)_$(shell grep ^Version: control | cut -d ' ' -f 2)_iphoneos-arm.deb
 	sudo rm -rf package
 
-$(NAME).dylib: config $(OBJS) $(HDRS)
-	$(LD) -dynamiclib $(LDFLAGS) $(OBJS) -o $@
-
-%.o: %.mm
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
-
-.PHONY: all clean
+install:
+	scp -P2222 $(shell grep ^Package: control | cut -d ' ' -f 2)_$(shell grep ^Version: control | cut -d ' ' -f 2)_iphoneos-arm.deb root@localhost:.
+	ssh -p2222 root@localhost dpkg -i $(shell grep ^Package: control | cut -d ' ' -f 2)_$(shell grep ^Version: control | cut -d ' ' -f 2)_iphoneos-arm.deb
+	ssh -p2222 root@localhost respring

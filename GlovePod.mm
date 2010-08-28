@@ -23,7 +23,11 @@ static BOOL invocationGPPowerButtonTimerDidFire = NO;
 static BOOL invocationGPChangeTrackTimerDidFire = NO;
 static NSTimer *invocationGPPowerButtonTimer = nil;
 static NSTimer *invocationGPChangeTrackTimer = nil;
+static BOOL isFirmware3x = NO;
 
+@interface SpringBoard (firmware3x)
+- (void)_unsetLockButtonBearTrap;
+@end
 
 /*==============================================================================
     ==============================================================================*/
@@ -140,7 +144,9 @@ static void (*_SpringBoard$lockButtonUp$)(id self, SEL cmd_, GSEventRef up) = NU
 static void $SpringBoard$lockButtonUp$(id self, SEL cmd_, GSEventRef up)
 {
     if (invocationGPPowerButtonTimerDidFire && isPowerButtonEnabled()) {
-        [self _unsetLockButtonBearTrap];
+        if (isFirmware3x)
+            [self _unsetLockButtonBearTrap];
+
         [self _setLockButtonTimer:nil];
     } else {
         cancelInvocationGPPowerButtonTimer();
@@ -273,6 +279,8 @@ static void $VolumeControl$decreaseVolume$(id self, SEL cmd_)
 
 void initGlovePod()
 {
+    isFirmware3x = [[[UIDevice currentDevice] systemVersion] hasPrefix:@"3"];
+
     Class $SpringBoard(objc_getClass("SpringBoard"));
     class_addMethod($SpringBoard, @selector(invokeGPPowerButton), (IMP)&$SpringBoard$invokeGPPowerButton, "v@:");
     class_addMethod($SpringBoard, @selector(invokeGPChangeTrack:), (IMP)&$SpringBoard$invokeGPChangeTrack, "v@:");
