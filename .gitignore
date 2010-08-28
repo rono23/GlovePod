@@ -1,3 +1,4 @@
 *.deb
 *.dylib
 *.o
+.DS_Store
